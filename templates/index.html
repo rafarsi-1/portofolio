@@ -1,0 +1,315 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id" data-theme="dark" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ profile.full_name }} — {{ profile.headline }}</title>
+  <meta name="description" content="Portofolio {{ profile.full_name }} — {{ profile.headline }}">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <!-- Terapkan tema tersimpan sebelum halaman dirender (mencegah kedipan) -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        if (t !== "light" && t !== "dark") t = "dark";
+        document.documentElement.setAttribute("data-theme", t);
+        document.documentElement.setAttribute("data-bs-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 + SwiperJS (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header" id="siteHeader">
+    <a href="#hero" class="brand mono" data-nav-link>
+      <span class="brand-dot"></span>{{ profile.full_name|default:"portfolio" }}
+    </a>
+
+    <div class="header-right">
+      <span class="header-clock mono d-none d-md-inline" id="clock" aria-hidden="true">--:--:-- WIB</span>
+
+      <button class="theme-toggle" id="themeToggle" type="button"
+              aria-label="Ganti tema" aria-pressed="false">
+        <span class="theme-icon" aria-hidden="true"></span>
+        <span class="theme-label mono" id="themeLabel">Dark</span>
+      </button>
+      <button class="menu-toggle" id="menuToggle" type="button"
+              aria-label="Buka menu" aria-expanded="false" aria-controls="navOverlay">
+        <span class="menu-label mono">Menu</span>
+        <span class="burger" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ FULLSCREEN NAV OVERLAY ============ -->
+  <nav class="nav-overlay" id="navOverlay" aria-hidden="true" aria-label="Navigasi utama">
+    <button class="overlay-close" id="menuClose" type="button" aria-label="Tutup menu">
+      <span class="mono">Close</span>
+      <span class="close-x" aria-hidden="true"><span></span><span></span></span>
+    </button>
+
+    <div class="container-fluid overlay-inner">
+      <ul class="overlay-links list-unstyled">
+        <li><a href="#hero"    data-nav-link><span class="idx mono">01</span><span class="txt">Home</span></a></li>
+        <li><a href="#about"   data-nav-link><span class="idx mono">02</span><span class="txt">About</span></a></li>
+        <li><a href="#works"   data-nav-link><span class="idx mono">03</span><span class="txt">Works</span></a></li>
+        <li><a href="#contact" data-nav-link><span class="idx mono">04</span><span class="txt">Contact</span></a></li>
+      </ul>
+
+      <div class="overlay-foot mono">
+        {% if profile.email %}<a href="mailto:{{ profile.email }}">{{ profile.email }}</a>{% endif %}
+        <div class="overlay-socials">
+          {% if profile.github_url %}<a href="{{ profile.github_url }}" target="_blank" rel="noopener">GitHub ↗</a>{% endif %}
+          {% if profile.linkedin_url %}<a href="{{ profile.linkedin_url }}" target="_blank" rel="noopener">LinkedIn ↗</a>{% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <div class="container-fluid px-lg-5">
+        <div class="hero-meta mono reveal">
+          <span>(Software Engineer)</span>
+          <span class="status"><i class="status-dot"></i> Available for work</span>
+          <span class="d-none d-md-inline">{% now "Y" %} — Portfolio</span>
+        </div>
+
+        <div class="row align-items-end gy-5">
+          <div class="col-lg-8 order-2 order-lg-1">
+            <h1 class="hero-title reveal">
+              {{ profile.full_name }}
+            </h1>
+            <p class="hero-headline reveal">
+              <span class="prompt mono">&gt;_</span> {{ profile.headline }}<span class="caret"></span>
+            </p>
+
+            <div class="hero-cta reveal">
+              <a href="#works" class="btn-editorial" data-nav-link>
+                Lihat Karya <span class="arrow">→</span>
+              </a>
+              <a href="#contact" class="btn-editorial btn-ghost" data-nav-link>
+                Hubungi Saya
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-4 order-1 order-lg-2">
+            <figure class="hero-photo reveal">
+              {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" alt="Foto {{ profile.full_name }}" loading="eager">
+              {% else %}
+                <div class="photo-placeholder mono">no_image.png</div>
+              {% endif %}
+              <figcaption class="mono">Fig. 01 — {{ profile.full_name }}</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="scroll-hint mono">Scroll ↓</div>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT & TECH STACK ============ -->
+    <section class="section about" id="about">
+      <div class="container-fluid px-lg-5">
+        <div class="section-head reveal">
+          <span class="mono section-no">02</span>
+          <span class="mono section-name">/ About</span>
+          <span class="rule"></span>
+        </div>
+
+        <div class="row gy-5">
+          <div class="col-lg-7">
+            <p class="lead-editorial reveal">
+              {% if profile.bio %}{{ profile.bio|linebreaksbr }}{% else %}Seorang software engineer pemula{% endif %}
+            </p>
+          </div>
+
+          <div class="col-lg-4 offset-lg-1">
+            <h2 class="mono sub-label reveal">Tech Stack</h2>
+            <ul class="skill-list list-unstyled">
+              {% for skill in skills %}
+                <li class="skill-item reveal">
+                  <span class="skill-no mono">{{ forloop.counter|stringformat:"02d" }}</span>
+                  <span class="skill-name">{{ skill.name }}</span>
+                  {% if skill.level %}<span class="skill-level mono">{{ skill.level }}</span>{% endif %}
+                </li>
+              {% empty %}
+                <li class="skill-item mono text-muted-2">// belum ada skill</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WORKS (SWIPER) ============ -->
+    <section class="section works" id="works">
+      <div class="container-fluid px-lg-5">
+        <div class="section-head reveal">
+          <span class="mono section-no">03</span>
+          <span class="mono section-name">/ Selected Works</span>
+          <span class="rule"></span>
+          <span class="mono works-counter" id="worksCounter">
+            <b id="worksCurrent">01</b> / <span id="worksTotal">{{ projects|length|stringformat:"02d" }}</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="works-wrap">
+        {% if projects %}
+        <div class="swiper works-swiper" id="worksSwiper">
+          <div class="swiper-wrapper">
+            {% for project in projects %}
+            <article class="swiper-slide project-card">
+              <div class="project-media">
+                {% if project.image %}
+                  <img src="{{ project.image.url }}" alt="{{ project.title }}" loading="lazy" draggable="false">
+                {% else %}
+                  <div class="photo-placeholder mono">no_image.png</div>
+                {% endif %}
+                <span class="project-no mono">{{ forloop.counter|stringformat:"02d" }}</span>
+              </div>
+
+              <div class="project-body">
+                <h3 class="project-title">{{ project.title }}</h3>
+                <p class="project-desc">{{ project.description|truncatechars:150 }}</p>
+
+                {# tech_stack diasumsikan string dipisah koma, mis. "Django, PostgreSQL, Docker" #}
+                {# Jika M2M: ganti dengan {% for t in project.technologies.all %}<span class="tag mono">{{ t.name }}</span>{% endfor %} #}
+                {% if project.tech_stack %}
+                <div class="tags" data-tags="{{ project.tech_stack }}">
+                  <noscript><span class="tag mono">{{ project.tech_stack }}</span></noscript>
+                </div>
+                {% endif %}
+
+                <div class="project-links mono">
+                  {% if project.repo_url %}<a href="{{ project.repo_url }}" target="_blank" rel="noopener">Repository ↗</a>{% endif %}
+                  {% if project.demo_url %}<a href="{{ project.demo_url }}" target="_blank" rel="noopener">Live Demo ↗</a>{% endif %}
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="container-fluid px-lg-5">
+          <div class="works-controls">
+            <div class="works-progress"><span id="worksProgressBar"></span></div>
+            <div class="works-arrows">
+              <button class="arrow-btn" id="worksPrev" type="button" aria-label="Sebelumnya">←</button>
+              <button class="arrow-btn" id="worksNext" type="button" aria-label="Berikutnya">→</button>
+            </div>
+          </div>
+          <p class="drag-hint mono">← drag / swipe →</p>
+        </div>
+        {% else %}
+          <div class="container-fluid px-lg-5">
+            <p class="mono text-muted-2">// belum ada project yang dipublikasikan</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="section contact" id="contact">
+      <div class="container-fluid px-lg-5">
+        <div class="section-head reveal">
+          <span class="mono section-no">04</span>
+          <span class="mono section-name">/ Contact</span>
+          <span class="rule"></span>
+        </div>
+
+        <div class="row gy-5">
+          <div class="col-lg-6">
+            <h2 class="contact-title reveal">Mari<br>bekerja<br>bersama.</h2>
+
+            {% if profile.email %}
+              <a class="contact-mail mono reveal" href="mailto:{{ profile.email }}">{{ profile.email }}</a>
+            {% endif %}
+
+            <ul class="social-list list-unstyled mono reveal">
+              {% if profile.github_url %}
+                <li><a href="{{ profile.github_url }}" target="_blank" rel="noopener">GitHub <span>↗</span></a></li>
+              {% endif %}
+              {% if profile.linkedin_url %}
+                <li><a href="{{ profile.linkedin_url }}" target="_blank" rel="noopener">LinkedIn <span>↗</span></a></li>
+              {% endif %}
+              {% if profile.email %}
+                <li><a href="mailto:{{ profile.email }}">Email <span>↗</span></a></li>
+              {% endif %}
+            </ul>
+          </div>
+
+          <div class="col-lg-5 offset-lg-1">
+            {% if messages %}
+              <div class="form-messages mono">
+                {% for message in messages %}
+                  <div class="form-message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <form class="contact-form reveal" method="post" action="#contact" novalidate>
+              {% csrf_token %}
+
+              <div class="field">
+                <label for="id_name" class="mono">01 — Nama</label>
+                <input type="text" id="id_name" name="name" placeholder="Nama lengkap" required autocomplete="name">
+              </div>
+
+              <div class="field">
+                <label for="id_email" class="mono">02 — Email</label>
+                <input type="email" id="id_email" name="email" placeholder="you@domain.com" required autocomplete="email">
+              </div>
+
+              <div class="field">
+                <label for="id_message" class="mono">03 — Pesan</label>
+                <textarea id="id_message" name="message" rows="4" placeholder="Ceritakan tentang project Anda…" required></textarea>
+              </div>
+
+              <button type="submit" class="btn-editorial btn-block">
+                Kirim Pesan <span class="arrow">→</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer mono">
+    <div class="container-fluid px-lg-5 d-flex flex-wrap justify-content-between gap-2">
+      <span>© <span id="year">{% now "Y" %}</span> {{ profile.full_name }}</span>
+      <span>Built with Django &amp; ☕</span>
+      <a href="#hero" data-nav-link>Back to top ↑</a>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
