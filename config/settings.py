@@ -63,7 +63,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ---------------------------------------------------------------- Database (Neon)
-tmpPostgres_raw_db_url = os.getenv("DATABASE_URL", "").strip().strip("'\"")
+_raw_db_url = os.getenv("DATABASE_URL", "").strip().strip("'\"")
 if _raw_db_url.startswith("psql "):
     _raw_db_url = _raw_db_url[5:].strip().strip("'\"")
 tmpPostgres = urlparse(_raw_db_url)
